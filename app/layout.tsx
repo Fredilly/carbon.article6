@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 import CarbonHeader from '../components/CarbonHeader';
 import CarbonFooter from '../components/CarbonFooter';
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <CarbonHeader />
         <main>{children}</main>
         <CarbonFooter />
+        <Analytics />
       </body>
     </html>
   );
