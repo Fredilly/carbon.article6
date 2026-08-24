@@ -2,10 +2,23 @@
 
 import { FormEvent, useRef, useState } from 'react';
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_FILE_SIZE = 150 * 1024 * 1024;
+const MAX_FILES = 10;
+const MAX_TOTAL_SIZE = 750 * 1024 * 1024;
+const ACCEPTED_SUPPORTING = '.pdf,.docx,.xlsx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation';
 const inputClasses = 'w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-forest-500 focus:outline-none focus:ring-2 focus:ring-forest-500 disabled:bg-gray-50';
 
 type Phase = 'idle' | 'uploading' | 'success' | 'error';
+type UploadSpec = { fileName: string; fileSize: number; role: 'PDD' | 'SUPPORTING' };
+type PreparedUpload = UploadSpec & { contentType: string; uploadUrl: string; uploadReference: string };
+
+function extension(fileName: string) {
+  return fileName.toLowerCase().split('.').pop() || '';
+}
+
+function isSupportingType(fileName: string) {
+  return ['pdf', 'docx', 'xlsx', 'pptx'].includes(extension(fileName));
+}
 
 export default function PddUploadForm() {
   const [phase, setPhase] = useState<Phase>('idle');
@@ -17,8 +30,10 @@ export default function PddUploadForm() {
   const [projectName, setProjectName] = useState('');
   const [methodology, setMethodology] = useState('');
   const [note, setNote] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [pdd, setPdd] = useState<File | null>(null);
+  const [supporting, setSupporting] = useState<File[]>([]);
+  const pddRef = useRef<HTMLInputElement>(null);
+  const supportingRef = useRef<HTMLInputElement>(null);
 
   function validate() {
     if (!fullName.trim()) return 'Full name is required.';
@@ -27,11 +42,29 @@ export default function PddUploadForm() {
     if (!organization.trim()) return 'Organization is required.';
     if (!projectName.trim()) return 'Project name is required.';
     if (!methodology.trim()) return 'Methodology is required.';
-    if (!file) return 'Please select a PDF file.';
-    if (file.type !== 'application/pdf') return 'Only PDF files are accepted.';
-    if (file.size <= 0) return 'The selected file is empty.';
-    if (file.size > MAX_FILE_SIZE) return 'File size must be under 50MB.';
+    if (!pdd) return 'Please select the project PDD.';
+    if (extension(pdd.name) !== 'pdf') return 'The PDD must be a PDF file.';
+
+    const allFiles = [pdd, ...supporting];
+    if (allFiles.length > MAX_FILES) return `Upload no more than ${MAX_FILES} files at a time.`;
+    let total = 0;
+    for (const file of allFiles) {
+      if (!isSupportingType(file.name)) return `${file.name}: accepted file types are PDF, DOCX, XLSX and PPTX.`;
+      if (file.size <= 0) return `${file.name} is empty.`;
+      if (file.size > MAX_FILE_SIZE) return `${file.name} exceeds the 150 MB per-file limit.`;
+      total += file.size;
+    }
+    if (total > MAX_TOTAL_SIZE) return 'The total project document package must be 750 MB or less.';
     return null;
+  }
+
+  async function uploadPrepared(prepared: PreparedUpload, source: File) {
+    const uploadRes = await fetch(prepared.uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': prepared.contentType },
+      body: source,
+    });
+    if (!uploadRes.ok) throw new Error(`${source.name} upload failed with HTTP ${uploadRes.status}. Please try again.`);
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -46,46 +79,54 @@ export default function PddUploadForm() {
     setPhase('uploading');
     setError('');
 
+    const sources = [pdd!, ...supporting];
+    const files: UploadSpec[] = sources.map((file, index) => ({
+      fileName: file.name,
+      fileSize: file.size,
+      role: index === 0 ? 'PDD' : 'SUPPORTING',
+    }));
     const metadata = {
-      fileName: file!.name,
-      contentType: 'application/pdf',
-      fileSize: file!.size,
       contactName: fullName.trim(),
       workEmail: workEmail.trim(),
       organization: organization.trim(),
       projectName: projectName.trim(),
       methodology: methodology.trim(),
-      submissionSource: 'website',
-      submissionType: 'CARBON',
-      sourceSite: 'carbon.article6.org',
       note: note.trim(),
+      files,
     };
 
     try {
-      const presignRes = await fetch('/api/upload/presign', {
+      const presignRes = await fetch('/api/carbon-intake/presign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(metadata),
       });
       const presignBody = await presignRes.json();
-      if (!presignRes.ok) throw new Error(presignBody.error || 'Failed to prepare upload.');
+      if (!presignRes.ok) throw new Error(presignBody.error || 'Failed to prepare uploads.');
 
-      const uploadRes = await fetch(presignBody.uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/pdf' },
-        body: file,
-      });
-      if (!uploadRes.ok) throw new Error(`File upload failed with HTTP ${uploadRes.status}. Please try again.`);
+      const prepared = presignBody.uploads as PreparedUpload[];
+      for (let start = 0; start < prepared.length; start += 3) {
+        await Promise.all(prepared.slice(start, start + 3).map((item, offset) => uploadPrepared(item, sources[start + offset])));
+      }
 
-      const confirmRes = await fetch('/api/upload/confirm', {
+      const confirmRes = await fetch('/api/carbon-intake/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...metadata, uploadReference: presignBody.uploadReference }),
+        body: JSON.stringify({
+          ...metadata,
+          packageReference: presignBody.packageReference,
+          files: prepared.map((item) => ({
+            fileName: item.fileName,
+            fileSize: item.fileSize,
+            role: item.role,
+            uploadReference: item.uploadReference,
+          })),
+        }),
       });
       const confirmBody = await confirmRes.json();
       if (!confirmRes.ok) throw new Error(confirmBody.error || 'Failed to confirm submission.');
 
-      setReference(confirmBody.submissionId || '');
+      setReference(confirmBody.packageReference || confirmBody.submissionId || '');
       setPhase('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
@@ -103,8 +144,10 @@ export default function PddUploadForm() {
     setProjectName('');
     setMethodology('');
     setNote('');
-    setFile(null);
-    if (fileRef.current) fileRef.current.value = '';
+    setPdd(null);
+    setSupporting([]);
+    if (pddRef.current) pddRef.current.value = '';
+    if (supportingRef.current) supportingRef.current.value = '';
   }
 
   if (phase === 'success') {
@@ -113,10 +156,10 @@ export default function PddUploadForm() {
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-100 text-forest-700">✓</div>
           <div>
-            <h3 className="text-lg font-semibold text-forest-800">Submission received</h3>
-            <p className="mt-1.5 max-w-md text-sm text-gray-600">Your PDD has been submitted for scope review. We will review your project documentation and respond within two business days.</p>
-            {reference && <p className="mt-3 text-xs text-gray-400">Reference: <code className="text-gray-500">{reference}</code></p>}
-            <button type="button" onClick={reset} className="mt-5 text-sm font-medium text-forest-700 hover:text-forest-800">Submit another PDD</button>
+            <h3 className="text-lg font-semibold text-forest-800">Project documents received</h3>
+            <p className="mt-1.5 max-w-md text-sm text-gray-600">Your PDD and supporting documents have been submitted together for scope review. We will respond within two business days.</p>
+            {reference && <p className="mt-3 text-xs text-gray-400">Package reference: <code className="text-gray-500">{reference}</code></p>}
+            <button type="button" onClick={reset} className="mt-5 text-sm font-medium text-forest-700 hover:text-forest-800">Submit another project</button>
           </div>
         </div>
       </div>
@@ -143,11 +186,16 @@ export default function PddUploadForm() {
       </Field>
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700">PDD <span className="text-forest-600">*</span></label>
-        <input ref={fileRef} type="file" accept="application/pdf,.pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={phase === 'uploading'} className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-forest-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-forest-700 hover:file:bg-forest-100" />
-        <p className="mt-1.5 text-xs text-gray-400">PDF only, up to 50MB.</p>
+        <input ref={pddRef} type="file" accept="application/pdf,.pdf" onChange={(e) => setPdd(e.target.files?.[0] || null)} disabled={phase === 'uploading'} className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-forest-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-forest-700 hover:file:bg-forest-100" />
+        <p className="mt-1.5 text-xs text-gray-400">Required PDF, up to 150 MB.</p>
+      </div>
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700">Supporting documents <span className="font-normal text-gray-400">optional</span></label>
+        <input ref={supportingRef} type="file" multiple accept={ACCEPTED_SUPPORTING} onChange={(e) => setSupporting(Array.from(e.target.files || []))} disabled={phase === 'uploading'} className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-forest-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-forest-700 hover:file:bg-forest-100" />
+        <p className="mt-1.5 text-xs text-gray-400">PDF, Word, Excel or PowerPoint. Up to 9 supporting files, 150 MB each. Maximum package size 750 MB.</p>
       </div>
       <button type="submit" disabled={phase === 'uploading'} className="preview-primary-cta w-full">
-        {phase === 'uploading' ? 'Uploading…' : 'Submit PDD for scope review'}
+        {phase === 'uploading' ? 'Uploading project documents…' : 'Submit project documents for scope review'}
       </button>
     </form>
   );
