@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import ContactForm from '../../components/ContactForm';
 
-export const metadata = { title: 'Contact Article6 Carbon', description: 'Contact Article6 about carbon project evidence-readiness assessments.' };
+export const metadata: Metadata = {
+  title: 'Contact Article6 Carbon',
+  description: 'Contact Article6 about carbon project evidence-readiness assessments.',
+  alternates: { canonical: '/contact' },
+};
 
 export default function ContactPage() {
   return (
