@@ -13,10 +13,10 @@ export default function CarbonFooter() {
           Independent pre-validation review. Not affiliated with Verra or any validation and verification body.
         </p>
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500">
-          <Link href="/sample-assessment" className="hover:text-forest-700">Sample Report</Link>
-          <Link href="/how-it-works" className="hover:text-forest-700">How It Works</Link>
-          <Link href="/about" className="hover:text-forest-700">About</Link>
-          <Link href="/contact" className="hover:text-forest-700">Contact</Link>
+          <Link href="/#how-it-works" className="hover:text-forest-700">How It Works</Link>
+          <Link href="/#sample-report" className="hover:text-forest-700">Sample Report</Link>
+          <Link href="/#price" className="hover:text-forest-700">Pricing</Link>
+          <Link href="/contact" className="hover:text-forest-700">About</Link>
         </div>
         <div className="mt-6 border-t border-gray-100 pt-5 text-xs text-gray-400">© {new Date().getFullYear()} Article6. All rights reserved.</div>
       </div>
