@@ -3,6 +3,8 @@ import EvidenceMapPreview from '../components/EvidenceMapPreview';
 import SampleFindings from '../components/SampleFindings';
 import PddUploadForm from '../components/PddUploadForm';
 
+const SAMPLE_PDF_URL = 'https://ik.imagekit.io/tzublgy5d/Article6/Sample%20Documents/VM0007_v1.8_SAMPLE.pdf?ik-attachment=true';
+
 const problemSignals = [
   'Evidence exists, but the PDD does not point to it clearly.',
   'A methodology requirement is addressed without enough support.',
@@ -104,7 +106,7 @@ export default function Home() {
       </section>
 
       <section className="border-y border-gray-200 bg-forest-50/50">
-        <div className="mx-auto max-w-6xl px-4 py-14 md:py-18">
+        <div className="mx-auto max-w-6xl px-4 py-14 md:py-16">
           <div className="max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Why earlier matters</p>
             <h2 className="text-xl font-bold tracking-tight text-gray-900 md:text-2xl">Those gaps get harder to fix once validation begins.</h2>
@@ -155,14 +157,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-14 md:py-18">
+      <section className="mx-auto max-w-6xl px-4 py-14 md:py-16">
         <div className="grid grid-cols-1 items-center gap-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:grid-cols-[1fr_auto] md:p-8">
           <div className="max-w-2xl">
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">See the deliverable first</p>
             <h2 className="text-xl font-bold tracking-tight text-gray-900 md:text-2xl">Review a full assessment before you send us anything.</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-600">The VM0007 v1.8 sample shows the report structure, evidence references, findings, required actions, and resolution criteria.</p>
           </div>
-          <Link href="/sample-assessment" className="preview-secondary-cta whitespace-nowrap">Open sample report</Link>
+          <div className="flex flex-col gap-2 sm:flex-row md:flex-col">
+            <a href={SAMPLE_PDF_URL} target="_blank" rel="noopener noreferrer" download className="preview-primary-cta whitespace-nowrap">Download sample PDF</a>
+            <Link href="/sample-assessment" className="preview-secondary-cta whitespace-nowrap">Open sample report</Link>
+          </div>
         </div>
       </section>
 
