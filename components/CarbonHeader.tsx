@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const links = [
-  { href: '/sample-assessment', label: 'Sample Report' },
-  { href: '/how-it-works', label: 'How It Works' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/#how-it-works', label: 'How It Works' },
+  { href: '/#sample-report', label: 'Sample Report' },
+  { href: '/#pricing', label: 'Pricing' },
+  { href: '/contact', label: 'About' },
 ];
 
 export default function CarbonHeader() {
