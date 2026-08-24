@@ -17,4 +17,4 @@ Excluded:
 - sales-specific database code and migrations
 - duplicated R2 or Neon credentials
 
-The canonical internal sales system and trusted submission backend remain in `Fredilly/Article6`.
+The canonical internal sales system and trusted submission backend remain in `Fredilly/Article6`. Carbon owns the public Carbon experience; Article6 owns internal operations.
