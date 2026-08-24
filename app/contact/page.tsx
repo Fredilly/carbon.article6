@@ -10,7 +10,7 @@ export default function ContactPage() {
           <h1 className="text-3xl font-bold md:text-5xl">Contact Us</h1>
           <p className="text-gray-600">We work with carbon project teams, consultants, investors, and partners worldwide.</p>
           <p><a href="mailto:contact@article6.org" className="font-semibold text-forest-700 hover:underline">contact@article6.org</a></p>
-          <div><a href="https://wa.me/2349066876272" rel="nofollow" className="inline-flex items-center rounded-full bg-green-600 px-5 py-3 text-white hover:bg-green-700">Chat on WhatsApp</a></div>
+          <div><a href="https://wa.me/8618030828814" target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center rounded-full bg-green-600 px-5 py-3 text-white hover:bg-green-700">Chat on WhatsApp</a></div>
         </div>
       </section>
       <section className="mb-16"><ContactForm /></section>

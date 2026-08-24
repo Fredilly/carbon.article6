@@ -1,17 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { usePathname } from 'next/navigation';
 
 const links = [
-  { href: '/sample-assessment', label: 'Sample Report' },
-  { href: '/how-it-works', label: 'How It Works' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/#how-it-works', label: 'How It Works' },
+  { href: '/#sample-report', label: 'Sample Report' },
+  { href: '/#price', label: 'Pricing' },
+  { href: '/contact', label: 'About' },
 ];
+
+function scrollToPrice() {
+  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 export default function CarbonHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === '/' && window.location.hash === '#price') {
+      window.requestAnimationFrame(scrollToPrice);
+    }
+  }, [pathname]);
+
+  function handleNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    setOpen(false);
+    if (href === '/#price' && pathname === '/') {
+      event.preventDefault();
+      window.history.pushState(null, '', '/#price');
+      scrollToPrice();
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
@@ -23,7 +44,7 @@ export default function CarbonHeader() {
 
         <div className="hidden items-center gap-6 md:flex">
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className="preview-focus-ring rounded-sm text-sm font-medium text-gray-600 transition-colors hover:text-forest-700">
+            <Link key={link.href} href={link.href} onClick={(event) => handleNavClick(event, link.href)} className="preview-focus-ring rounded-sm text-sm font-medium text-gray-600 transition-colors hover:text-forest-700">
               {link.label}
             </Link>
           ))}
@@ -46,7 +67,7 @@ export default function CarbonHeader() {
         <div id="carbon-mobile-menu" className="border-t border-gray-200 bg-white px-4 py-3 md:hidden">
           <div className="mx-auto flex max-w-6xl flex-col gap-1">
             {links.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="rounded-md px-3 py-3 text-sm font-medium text-gray-700 hover:bg-forest-50 hover:text-forest-700">
+              <Link key={link.href} href={link.href} onClick={(event) => handleNavClick(event, link.href)} className="rounded-md px-3 py-3 text-sm font-medium text-gray-700 hover:bg-forest-50 hover:text-forest-700">
                 {link.label}
               </Link>
             ))}

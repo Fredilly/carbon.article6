@@ -142,7 +142,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white">
+      <section id="how-it-works" className="scroll-mt-20 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-forest-600">How we do it</p>
@@ -199,24 +199,24 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="mt-12 rounded-xl bg-forest-950 p-6 text-white md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-300">A record your team can keep using</p>
-                <h3 className="mt-3 text-2xl font-bold tracking-tight">Turn expert knowledge into project knowledge.</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-6 text-forest-100">
+              <div className="mt-12 rounded-xl border border-forest-200 bg-forest-50/70 p-6 md:p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-700">A record your team can keep using</p>
+                <h3 className="mt-3 text-2xl font-bold tracking-tight text-gray-950">Turn expert knowledge into project knowledge.</h3>
+                <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-700">
                   The Evidence Map preserves the reasoning and source trail behind the PDD in a structure other members of the team can follow. If people move on, the project retains a usable record of the work.
                 </p>
-                <div className="mt-6 grid gap-3 text-sm text-forest-100 sm:grid-cols-2">
+                <div className="mt-6 grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
                   {retainedKnowledge.map((item) => (
                     <div key={item} className="flex items-start gap-2.5">
-                      <span className="mt-1 text-forest-300">✓</span>
+                      <span className="mt-1 font-semibold text-forest-700">✓</span>
                       <span>{item}</span>
                     </div>
                   ))}
                 </div>
-                <p className="mt-6 border-t border-forest-800 pt-5 text-sm font-semibold text-white">Not a black-box score. Every finding is traceable.</p>
+                <p className="mt-6 border-t border-forest-200 pt-5 text-sm font-semibold text-gray-900">Not a black-box score. Every finding is traceable.</p>
               </div>
 
-              <div className="mt-12">
+              <div id="sample-report" className="scroll-mt-24 mt-12">
                 <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-600">See the output</p>
@@ -231,7 +231,7 @@ export default function Home() {
               </div>
             </div>
 
-            <aside className="lg:sticky lg:top-24 lg:self-start">
+            <aside id="pricing" className="scroll-mt-24 lg:sticky lg:top-24 lg:self-start">
               <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_18px_50px_-30px_rgba(15,23,42,0.35)]">
                 <div className="border-b border-gray-100 px-6 py-6">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-600">Pre-validation evidence readiness review</p>
@@ -254,7 +254,6 @@ export default function Home() {
                   </ul>
                   <div className="mt-6 space-y-3 border-t border-gray-100 pt-6 text-sm leading-6 text-gray-500">
                     <p><strong className="font-semibold text-gray-800">Timeline:</strong> 10 business days after scope and complete documents are confirmed.</p>
-                    <p><strong className="font-semibold text-gray-800">Terms:</strong> 50% on acceptance, 50% before the final report.</p>
                   </div>
                   <p className="mt-5 rounded-lg bg-gray-50 px-4 py-3 text-xs leading-5 text-gray-500">
                     Submitting your PDD for an initial scope review does not commit you to an engagement.
