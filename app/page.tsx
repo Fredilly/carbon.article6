@@ -254,7 +254,6 @@ export default function Home() {
                   </ul>
                   <div className="mt-6 space-y-3 border-t border-gray-100 pt-6 text-sm leading-6 text-gray-500">
                     <p><strong className="font-semibold text-gray-800">Timeline:</strong> 10 business days after scope and complete documents are confirmed.</p>
-                    <p><strong className="font-semibold text-gray-800">Terms:</strong> 50% on acceptance, 50% before the final report.</p>
                   </div>
                   <p className="mt-5 rounded-lg bg-gray-50 px-4 py-3 text-xs leading-5 text-gray-500">
                     Submitting your PDD for an initial scope review does not commit you to an engagement.
