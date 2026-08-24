@@ -157,7 +157,7 @@ export default function PddUploadForm() {
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-100 text-forest-700">✓</div>
           <div>
             <h3 className="text-lg font-semibold text-forest-800">Project documents received</h3>
-            <p className="mt-1.5 max-w-md text-sm text-gray-600">Your PDD and supporting documents have been submitted together for scope review. We will respond within two business days.</p>
+            <p className="mt-1.5 max-w-md text-sm text-gray-600">Your PDD and supporting evidence have been submitted together for scope review. We will respond within two business days.</p>
             {reference && <p className="mt-3 text-xs text-gray-400">Package reference: <code className="text-gray-500">{reference}</code></p>}
             <button type="button" onClick={reset} className="mt-5 text-sm font-medium text-forest-700 hover:text-forest-800">Submit another project</button>
           </div>
@@ -190,9 +190,9 @@ export default function PddUploadForm() {
         <p className="mt-1.5 text-xs text-gray-400">Required PDF, up to 150 MB.</p>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Supporting documents <span className="font-normal text-gray-400">optional</span></label>
+        <label className="mb-1 block text-sm font-medium text-gray-700">Supporting evidence <span className="font-normal text-gray-400">optional</span></label>
         <input ref={supportingRef} type="file" multiple accept={ACCEPTED_SUPPORTING} onChange={(e) => setSupporting(Array.from(e.target.files || []))} disabled={phase === 'uploading'} className="block w-full rounded-md border border-gray-300 bg-white p-2.5 text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-forest-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-forest-700 hover:file:bg-forest-100" />
-        <p className="mt-1.5 text-xs text-gray-400">PDF, Word, Excel or PowerPoint. Up to 9 supporting files, 150 MB each. Maximum package size 750 MB.</p>
+        <p className="mt-1.5 text-xs text-gray-400">Evidence supporting the PDD may be PDF, Word, Excel or PowerPoint. Up to 9 supporting files, 150 MB each. Maximum package size 750 MB.</p>
       </div>
       <button type="submit" disabled={phase === 'uploading'} className="preview-primary-cta w-full">
         {phase === 'uploading' ? 'Uploading project documents…' : 'Submit project documents for scope review'}
