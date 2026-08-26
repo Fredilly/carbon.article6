@@ -235,10 +235,12 @@ export default function Home() {
               <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_18px_50px_-30px_rgba(15,23,42,0.35)]">
                 <div className="border-b border-gray-100 px-6 py-6">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-600">Pre-validation evidence readiness review</p>
-                  <div className="mt-3 flex items-end gap-2">
+                  <p className="mt-3 text-sm font-medium text-gray-500">Starts from</p>
+                  <div className="mt-1 flex items-end gap-2">
                     <span className="text-4xl font-bold tracking-[-0.04em] text-gray-950">$2,999</span>
                     <span className="pb-1 text-sm text-gray-400">USD</span>
                   </div>
+                  <p className="mt-3 text-xs leading-5 text-gray-500">Final pricing depends on project scope, document volume, methodology complexity, and validation stage.</p>
                 </div>
                 <div className="px-6 py-6">
                   <ul className="space-y-3 text-sm leading-6 text-gray-700">
